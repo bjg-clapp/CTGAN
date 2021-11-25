@@ -138,8 +138,8 @@ class TVAESynthesizer(BaseSynthesizer):
                 loss.backward()
                 optimizerAE.step()
                 self.decoder.sigma.data.clamp_(0.01, 1.0)
-        end = datetime.now()
-        print("bjg-clapp epoch " + str(i+1) + " took: " + str(end-start)) 
+            end = datetime.now()
+            print("bjg-clapp epoch " + str(i+1) + " took: " + str(end-start)) 
 
     def sample(self, samples):
         self.decoder.eval()
