@@ -120,6 +120,7 @@ class TVAESynthesizer(BaseSynthesizer):
             weight_decay=self.l2scale)
 
         for i in range(self.epochs):
+            print("bjg-clapp tvae: ", (i+1))
             for id_, data in enumerate(loader):
                 optimizerAE.zero_grad()
                 real = data[0].to(self._device)
