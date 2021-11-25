@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import torch
+from datetime import datetime
 from packaging import version
 from torch import optim
 from torch.nn import BatchNorm1d, Dropout, LeakyReLU, Linear, Module, ReLU, Sequential, functional
@@ -329,6 +330,8 @@ class CTGANSynthesizer(BaseSynthesizer):
 
         steps_per_epoch = max(len(train_data) // self._batch_size, 1)
         for i in range(epochs):
+            print("bjg-clapp ctgan: " + str(i+1))
+            start = datetime.now()
             for id_ in range(steps_per_epoch):
 
                 for n in range(self._discriminator_steps):
@@ -403,11 +406,14 @@ class CTGANSynthesizer(BaseSynthesizer):
                 optimizerG.zero_grad()
                 loss_g.backward()
                 optimizerG.step()
-
+                
             if self._verbose:
                 print(f"Epoch {i+1}, Loss G: {loss_g.detach().cpu(): .4f}, "
                       f"Loss D: {loss_d.detach().cpu(): .4f}",
                       flush=True)
+            end = datetime.now()
+            print("bjg-clapp epoch " + str(i+1) + " took: " + str(end-start))
+            
 
     def sample(self, n, condition_column=None, condition_value=None):
         """Sample data similar to the training data.
