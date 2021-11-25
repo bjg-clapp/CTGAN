@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from datetime import datetime
 from torch.nn import Linear, Module, Parameter, ReLU, Sequential
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
@@ -120,6 +121,7 @@ class TVAESynthesizer(BaseSynthesizer):
             weight_decay=self.l2scale)
 
         for i in range(self.epochs):
+            start = datetime.now()
             print("bjg-clapp tvae: ", (i+1))
             for id_, data in enumerate(loader):
                 optimizerAE.zero_grad()
@@ -136,6 +138,8 @@ class TVAESynthesizer(BaseSynthesizer):
                 loss.backward()
                 optimizerAE.step()
                 self.decoder.sigma.data.clamp_(0.01, 1.0)
+                end = datetime.now()
+                print("bjg-clapp epoch " + str(i+1) + " took: " + str(end-start)) 
 
     def sample(self, samples):
         self.decoder.eval()
