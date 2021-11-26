@@ -157,12 +157,15 @@ class TVAESynthesizer(BaseSynthesizer):
         print("done with tvae epoch")   
         
         end2 = datetime.now()
+        print("start uploading collection to platform")
         identifier = str((end2-start).total_seconds())
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
         Clapp.App("tvae").Collection().Create(slug= identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
         Clapp.App("tvae").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
-        print("done with fit function in tvae") 
+        end3 = datetime.now()
+        print("uploading collection to platform took: " + str(end3 - end2))
+        print("done with ctgan fit function") 
         
 
     def sample(self, samples):
