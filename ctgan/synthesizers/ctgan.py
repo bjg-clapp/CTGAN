@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import torch
+import Clappform as Clapp
 from datetime import datetime
 from packaging import version
 from torch import optim
@@ -329,9 +330,20 @@ class CTGANSynthesizer(BaseSynthesizer):
         std = mean + 1
 
         steps_per_epoch = max(len(train_data) // self._batch_size, 1)
+        
+        D_loss_per_epoch = []
+        G_loss_per_epoch = []
+        time_list = []
+        
+        df = pd.DataFrame(columns=["g_loss_per_epoch", "d_loss_per_epoch", "time_per_epoch"])
+        
         for i in range(epochs):
+            
             print("bjg-clapp ctgan: " + str(i+1))
             start = datetime.now()
+            D_loss_per_step = []
+            G_loss_per_step = []
+            
             for id_ in range(steps_per_epoch):
 
                 for n in range(self._discriminator_steps):
@@ -372,6 +384,8 @@ class CTGANSynthesizer(BaseSynthesizer):
                         real_cat, fake_cat, self._device, self.pac)
                     loss_d = -(torch.mean(y_real) - torch.mean(y_fake))
 
+                    D_loss_per_step.append(loss_d.item())
+                    
                     optimizerD.zero_grad()
                     pen.backward(retain_graph=True)
                     loss_d.backward()
@@ -402,17 +416,36 @@ class CTGANSynthesizer(BaseSynthesizer):
                     cross_entropy = self._cond_loss(fake, c1, m1)
 
                 loss_g = -torch.mean(y_fake) + cross_entropy
+                
+                G_loss_per_step.append(loss_g.item())
 
                 optimizerG.zero_grad()
                 loss_g.backward()
                 optimizerG.step()
+            
+            D_loss_per_epoch.append(np.mean(D_loss_per_step))
+            G_loss_per_epoch.append(np.mean(G_loss_per_step))
                 
             if self._verbose:
                 print(f"Epoch {i+1}, Loss G: {loss_g.detach().cpu(): .4f}, "
                       f"Loss D: {loss_d.detach().cpu(): .4f}",
                       flush=True)
+             
             end = datetime.now()
+            time_list.append((end-start).total_seconds())  
             print("bjg-clapp epoch " + str(i+1) + " took: " + str(end-start))
+            
+        df["d_loss_per_epoch"] = D_loss_per_epoch
+        df["g_loss_per_epoch"] = G_loss_per_epoch
+        df["time_per_epoch"] = time_list
+        
+        end2 = datetime.now()
+        identifier = str((end2-start).total_seconds())
+        Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
+        Clapp.App("ctgan").Collection().Create(slug=identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
+        Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
+        Clapp.App("ctgan").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
+        print("done with ctgan epoch")    
             
 
     def sample(self, n, condition_column=None, condition_value=None):
