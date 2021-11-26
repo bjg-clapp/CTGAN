@@ -149,6 +149,7 @@ class TVAESynthesizer(BaseSynthesizer):
                     self.transformer.output_info_list, self.loss_factor
                 )
                 loss = loss_1 + loss_2
+                loss_per_step_list.append(loss.item())
                 loss.backward()
                 optimizerAE.step()
                 self.decoder.sigma.data.clamp_(0.01, 1.0)
