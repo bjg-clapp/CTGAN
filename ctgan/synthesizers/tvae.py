@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from datetime import datetime
+import Clappform as Clapp
 from torch.nn import Linear, Module, Parameter, ReLU, Sequential
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
@@ -120,9 +121,16 @@ class TVAESynthesizer(BaseSynthesizer):
             list(encoder.parameters()) + list(self.decoder.parameters()),
             weight_decay=self.l2scale)
 
+        loss_list = []
+        time_list = []
+        df = pd.DataFrame(columns=["loss_per_epoch", "time_per_epoch"])        
+        
         for i in range(self.epochs):
-            start = datetime.now()
+            
             print("bjg-clapp tvae: ", (i+1))
+            start = datetime.now()
+            loss_per_step_list = []
+            
             for id_, data in enumerate(loader):
                 optimizerAE.zero_grad()
                 real = data[0].to(self._device)
@@ -138,8 +146,24 @@ class TVAESynthesizer(BaseSynthesizer):
                 loss.backward()
                 optimizerAE.step()
                 self.decoder.sigma.data.clamp_(0.01, 1.0)
+                
             end = datetime.now()
+            loss_list.append(np.mean(loss_per_step_list))
+            time_list.append((end-start).total_seconds())             
             print("bjg-clapp epoch " + str(i+1) + " took: " + str(end-start)) 
+            
+        df["loss_per_epoch"] = loss_list
+        df["time_per_epoch"] = time_list
+        print("done with tvae epoch")   
+        
+        end2 = datetime.now()
+        identifier = str((end2-start).total_seconds())
+        Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
+        Clapp.App("tvae").Collection().Create(slug= identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
+        Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
+        Clapp.App("tvae").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
+        print("done with fit function in tvae") 
+        
 
     def sample(self, samples):
         self.decoder.eval()
