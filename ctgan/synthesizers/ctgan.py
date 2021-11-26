@@ -136,7 +136,7 @@ class CTGANSynthesizer(BaseSynthesizer):
     def __init__(self, embedding_dim=128, generator_dim=(256, 256), discriminator_dim=(256, 256),
                  generator_lr=2e-4, generator_decay=1e-6, discriminator_lr=2e-4,
                  discriminator_decay=1e-6, batch_size=500, discriminator_steps=1,
-                 log_frequency=True, verbose=False, epochs=300, pac=10, cuda=True):
+                 log_frequency=True, verbose=False, epochs=300, pac=10, cuda=True, model_id = None):
 
         assert batch_size % 2 == 0
 
@@ -155,6 +155,7 @@ class CTGANSynthesizer(BaseSynthesizer):
         self._verbose = verbose
         self._epochs = epochs
         self.pac = pac
+        self.model_id = model_id
 
         if not cuda or not torch.cuda.is_available():
             device = 'cpu'
@@ -270,6 +271,7 @@ class CTGANSynthesizer(BaseSynthesizer):
             raise ValueError('Invalid columns found: {}'.format(invalid_columns))
 
     def fit(self, train_data, discrete_columns=tuple(), epochs=None):
+        start_fit = datetime.now()
         """Fit the CTGAN Synthesizer models to the training data.
 
         Args:
@@ -336,7 +338,8 @@ class CTGANSynthesizer(BaseSynthesizer):
         time_list = []
         
         df = pd.DataFrame(columns=["g_loss_per_epoch", "d_loss_per_epoch", "time_per_epoch"])
-        
+        end_fit = datetime.now()
+        print("installation before loop in fit starts: " + str(end_fit - start_fit))
         for i in range(epochs):
             
             print("bjg-clapp ctgan: " + str(i+1))
@@ -441,7 +444,8 @@ class CTGANSynthesizer(BaseSynthesizer):
         
         end2 = datetime.now()
         print("start uploading collection to platform")
-        identifier = str((end2-start).total_seconds())
+        #identifier = str((end2-start).total_seconds())
+        identifier = str(self.model_id)
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
         Clapp.App("ctgan").Collection().Create(slug=identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
