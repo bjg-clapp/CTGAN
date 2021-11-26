@@ -311,26 +311,31 @@ class CTGANSynthesizer(BaseSynthesizer):
             self._generator_dim,
             data_dim
         ).to(self._device)
-
+        
+        print("1")
         discriminator = Discriminator(
             data_dim + self._data_sampler.dim_cond_vec(),
             self._discriminator_dim,
             pac=self.pac
         ).to(self._device)
 
+        print("2")
         optimizerG = optim.Adam(
             self._generator.parameters(), lr=self._generator_lr, betas=(0.5, 0.9),
             weight_decay=self._generator_decay
         )
-
+        
+        print("3")
         optimizerD = optim.Adam(
             discriminator.parameters(), lr=self._discriminator_lr,
             betas=(0.5, 0.9), weight_decay=self._discriminator_decay
         )
-
+        
+        print("4")
         mean = torch.zeros(self._batch_size, self._embedding_dim, device=self._device)
         std = mean + 1
-
+        
+        print("5")
         steps_per_epoch = max(len(train_data) // self._batch_size, 1)
         
         D_loss_per_epoch = []
