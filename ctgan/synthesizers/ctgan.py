@@ -440,11 +440,14 @@ class CTGANSynthesizer(BaseSynthesizer):
         df["time_per_epoch"] = time_list
         
         end2 = datetime.now()
+        print("start uploading collection to platform")
         identifier = str((end2-start).total_seconds())
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
         Clapp.App("ctgan").Collection().Create(slug=identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
         Clapp.App("ctgan").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
+        end3 = datetime.now()
+        print("uploading collection to platform took: " + str(end3 - end2))
         print("done with ctgan epoch")    
             
 
