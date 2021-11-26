@@ -86,7 +86,8 @@ class TVAESynthesizer(BaseSynthesizer):
         batch_size=500,
         epochs=300,
         loss_factor=2,
-        cuda=True
+        cuda=True,
+        model_id = None
     ):
 
         self.embedding_dim = embedding_dim
@@ -97,6 +98,7 @@ class TVAESynthesizer(BaseSynthesizer):
         self.batch_size = batch_size
         self.loss_factor = loss_factor
         self.epochs = epochs
+        self.model_id = model_id
 
         if not cuda or not torch.cuda.is_available():
             device = 'cpu'
