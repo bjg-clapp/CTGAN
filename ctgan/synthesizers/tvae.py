@@ -110,6 +110,7 @@ class TVAESynthesizer(BaseSynthesizer):
         self._device = torch.device(device)
 
     def fit(self, train_data, discrete_columns=tuple()):
+        start_fit = datetime.now()
         self.transformer = DataTransformer()
         self.transformer.fit(train_data, discrete_columns)
         train_data = self.transformer.transform(train_data)
@@ -125,14 +126,16 @@ class TVAESynthesizer(BaseSynthesizer):
 
         loss_list = []
         time_list = []
-        df = pd.DataFrame(columns=["loss_per_epoch", "time_per_epoch"])        
+        df = pd.DataFrame(columns=["loss_per_epoch", "time_per_epoch"])    
+        
+        end_fit = datetime.now()
+        print("installation before loop in fit starts: " + str(end_fit - start_fit)) 
         
         for i in range(self.epochs):
             
             print("bjg-clapp tvae: ", (i+1))
             start = datetime.now()
-            loss_per_step_list = []
-            
+            loss_per_step_list = []            
             for id_, data in enumerate(loader):
                 optimizerAE.zero_grad()
                 real = data[0].to(self._device)
@@ -160,7 +163,8 @@ class TVAESynthesizer(BaseSynthesizer):
         
         end2 = datetime.now()
         print("start uploading collection to platform")
-        identifier = str((end2-start).total_seconds())
+        #identifier = str((end2-start).total_seconds())
+        identifier = str(self.model_id)
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
         Clapp.App("tvae").Collection().Create(slug= identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
