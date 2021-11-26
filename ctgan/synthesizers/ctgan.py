@@ -448,7 +448,7 @@ class CTGANSynthesizer(BaseSynthesizer):
         Clapp.App("ctgan").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
         end3 = datetime.now()
         print("uploading collection to platform took: " + str(end3 - end2))
-        print("done with ctgan epoch")    
+        print("done with ctgan fit function")    
             
 
     def sample(self, n, condition_column=None, condition_value=None):
