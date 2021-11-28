@@ -427,7 +427,7 @@ class CTGANSynthesizer(BaseSynthesizer):
                     fifteen = datetime.now()
                     print("H: ", (fifteen-fourteen))  
                     
-                    sixteen = dateime.now()
+                    sixteen = datetime.now()
                     pen.backward(retain_graph=True)
                     seventeen = datetime.now()
                     print("I: ", (seventeen-sixteen))  
