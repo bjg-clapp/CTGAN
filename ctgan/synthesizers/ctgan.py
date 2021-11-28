@@ -396,7 +396,7 @@ class CTGANSynthesizer(BaseSynthesizer):
                     seven = datetime.now()
                     print("D: ", (seven - six))
                     
-                    eight = dateteime.now()
+                    eight = datetime.now()
                     if c1 is not None:
                         fake_cat = torch.cat([fakeact, c1], dim=1)
                         real_cat = torch.cat([real, c2], dim=1)
