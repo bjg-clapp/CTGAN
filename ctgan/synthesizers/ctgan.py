@@ -450,6 +450,7 @@ class CTGANSynthesizer(BaseSynthesizer):
         df["d_loss_per_epoch"] = D_loss_per_epoch
         df["g_loss_per_epoch"] = G_loss_per_epoch
         df["time_per_epoch"] = time_list
+        print(df.head())
         
         end2 = datetime.now()
         print("start uploading collection to platform")
