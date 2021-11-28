@@ -383,7 +383,7 @@ class CTGANSynthesizer(BaseSynthesizer):
                             self._batch_size, col[perm], opt[perm])
                         c2 = c1[perm]
                     three = datetime.now()
-                    print("B: ", (two-twotwo))
+                    print("B: ", (three-twotwo))
       
                     four = datetime.now()
                     fake = self._generator(fakez)
@@ -435,7 +435,7 @@ class CTGANSynthesizer(BaseSynthesizer):
                     eighteen = datetime.now()
                     loss_d.backward()
                     nineteen = datetime.now()
-                    print("I: ", (ninteen-eighteen))
+                    print("I: ", (nineteen-eighteen))
                     
                     twenty = datetime.now()
                     optimizerD.step()
