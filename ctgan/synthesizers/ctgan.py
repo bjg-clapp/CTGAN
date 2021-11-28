@@ -359,8 +359,14 @@ class CTGANSynthesizer(BaseSynthesizer):
             for id_ in range(steps_per_epoch):
 
                 for n in range(self._discriminator_steps):
+                    print("step: ", (n+1))
+                    
+                    one = datetime.now()
                     fakez = torch.normal(mean=mean, std=std)
-
+                    two = datetime.now()
+                    print("A: ", (two-one))
+                    
+                    twotwo = datetime.now()
                     condvec = self._data_sampler.sample_condvec(self._batch_size)
                     if condvec is None:
                         c1, m1, col, opt = None, None, None, None
@@ -376,32 +382,65 @@ class CTGANSynthesizer(BaseSynthesizer):
                         real = self._data_sampler.sample_data(
                             self._batch_size, col[perm], opt[perm])
                         c2 = c1[perm]
-
+                    three = datetime.now()
+                    print("B: ", (two-twotwo))
+      
+                    four = datetime.now()
                     fake = self._generator(fakez)
                     fakeact = self._apply_activate(fake)
-
+                    five = datetime.now()
+                    print("C: ", (five-four))
+                    
+                    six = datetime.now()
                     real = torch.from_numpy(real.astype('float32')).to(self._device)
-
+                    seven = datetime.now()
+                    print("D: ", (seven - six))
+                    
+                    eight = dateteime.now()
                     if c1 is not None:
                         fake_cat = torch.cat([fakeact, c1], dim=1)
                         real_cat = torch.cat([real, c2], dim=1)
                     else:
                         real_cat = real
                         fake_cat = fakeact
-
+                    nine = datetime.now()
+                    print("E: ", (nine-eight))
+                    
+                    ten = datetime.now()
                     y_fake = discriminator(fake_cat)
                     y_real = discriminator(real_cat)
+                    eleven = datetime.now()
+                    print("F: ", (eleven-ten))                    
 
+                    
+                    twelve = datetime.now()
                     pen = discriminator.calc_gradient_penalty(
                         real_cat, fake_cat, self._device, self.pac)
                     loss_d = -(torch.mean(y_real) - torch.mean(y_fake))
-
+                    thirteen = datetime.now()
+                    print("G: ", (thirteen-twelve)) 
+                    
                     D_loss_per_step.append(loss_d.item())
                     
+                    fourteen = datetime.now()
                     optimizerD.zero_grad()
+                    fifteen = datetime.now()
+                    print("H: ", (fifteen-fourteen))  
+                    
+                    sixteen = dateime.now()
                     pen.backward(retain_graph=True)
+                    seventeen = datetime.now()
+                    print("I: ", (seventeen-sixteen))  
+                    
+                    eighteen = datetime.now()
                     loss_d.backward()
+                    nineteen = datetime.now()
+                    print("I: ", (ninteen-eighteen))
+                    
+                    twenty = datetime.now()
                     optimizerD.step()
+                    twenteone = datetime.now()
+                    print("J: ", (twenteone-twenty))
 
                 fakez = torch.normal(mean=mean, std=std)
                 condvec = self._data_sampler.sample_condvec(self._batch_size)
