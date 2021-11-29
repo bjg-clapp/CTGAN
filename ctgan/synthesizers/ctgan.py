@@ -491,18 +491,13 @@ class CTGANSynthesizer(BaseSynthesizer):
         df["time_per_epoch"] = time_list
         print(df.head())
         identifier = str(self.model_id)
-        df.to_csv("C:/Users/DiegoClappForm/Documents/Benjamin/ctgan_models/" + identifier + ".csv")
         
-#         end2 = datetime.now()
-#         print("start uploading collection to platform")
-#         #identifier = str((end2-start).total_seconds())
-#         identifier = str(self.model_id)
-#         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
-#         Clapp.App("ctgan").Collection().Create(slug=identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
-#         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
-#         Clapp.App("ctgan").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
-#         end3 = datetime.now()
-#         print("uploading collection to platform took: " + str(end3 - end2))
+        print("start uploading collection to platform")
+        identifier = str(self.model_id)
+        Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
+        Clapp.App("ctgan").Collection().Create(slug=identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
+        Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
+        Clapp.App("ctgan").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
         print("done with ctgan fit function")    
             
 
