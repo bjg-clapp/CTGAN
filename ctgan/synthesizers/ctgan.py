@@ -359,7 +359,7 @@ class CTGANSynthesizer(BaseSynthesizer):
             for id_ in range(steps_per_epoch):
 
                 for n in range(self._discriminator_steps):
-                    print("step: ", (n+1))
+                    #print("step: ", (n+1))
                     
                     #one = datetime.now()
                     fakez = torch.normal(mean=mean, std=std)
