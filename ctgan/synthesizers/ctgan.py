@@ -306,37 +306,37 @@ class CTGANSynthesizer(BaseSynthesizer):
 
         data_dim = self._transformer.output_dimensions
         
-        punt1 = datetime.now()
+        #punt1 = datetime.now()
         self._generator = Generator(
             self._embedding_dim + self._data_sampler.dim_cond_vec(),
             self._generator_dim,
             data_dim
         ).to(self._device)
            
-        punt2 = datetime.now()
-        print("1: ", (punt2-punt1))
+        #punt2 = datetime.now()
+        #print("1: ", (punt2-punt1))
         discriminator = Discriminator(
             data_dim + self._data_sampler.dim_cond_vec(),
             self._discriminator_dim,
             pac=self.pac
         ).to(self._device)
 
-        punt3 = datetime.now()
-        print("2: ", (punt3-punt2))
+        #punt3 = datetime.now()
+        #print("2: ", (punt3-punt2))
         optimizerG = optim.Adam(
             self._generator.parameters(), lr=self._generator_lr, betas=(0.5, 0.9),
             weight_decay=self._generator_decay
         )
         
-        punt4 = datetime.now()
-        print("3: ", (punt4-punt3))
+        #punt4 = datetime.now()
+        #print("3: ", (punt4-punt3))
         optimizerD = optim.Adam(
             discriminator.parameters(), lr=self._discriminator_lr,
             betas=(0.5, 0.9), weight_decay=self._discriminator_decay
         )
         
-        punt5 = datetime.now()
-        print("4: ", (punt5-punt4))
+        #punt5 = datetime.now()
+        #print("4: ", (punt5-punt4))
         mean = torch.zeros(self._batch_size, self._embedding_dim, device=self._device)
         std = mean + 1
         
@@ -361,12 +361,12 @@ class CTGANSynthesizer(BaseSynthesizer):
                 for n in range(self._discriminator_steps):
                     print("step: ", (n+1))
                     
-                    one = datetime.now()
+                    #one = datetime.now()
                     fakez = torch.normal(mean=mean, std=std)
-                    two = datetime.now()
-                    print("A: ", (two-one))
+                    #two = datetime.now()
+                    #print("A: ", (two-one))
                     
-                    twotwo = datetime.now()
+                    #twotwo = datetime.now()
                     condvec = self._data_sampler.sample_condvec(self._batch_size)
                     if condvec is None:
                         c1, m1, col, opt = None, None, None, None
@@ -382,65 +382,65 @@ class CTGANSynthesizer(BaseSynthesizer):
                         real = self._data_sampler.sample_data(
                             self._batch_size, col[perm], opt[perm])
                         c2 = c1[perm]
-                    three = datetime.now()
-                    print("B: ", (three-twotwo))
+                    #three = datetime.now()
+                    #print("B: ", (three-twotwo))
       
-                    four = datetime.now()
+                    #four = datetime.now()
                     fake = self._generator(fakez)
                     fakeact = self._apply_activate(fake)
-                    five = datetime.now()
-                    print("C: ", (five-four))
+                    #five = datetime.now()
+                    #print("C: ", (five-four))
                     
-                    six = datetime.now()
+                    #six = datetime.now()
                     real = torch.from_numpy(real.astype('float32')).to(self._device)
-                    seven = datetime.now()
-                    print("D: ", (seven - six))
+                    #seven = datetime.now()
+                    #print("D: ", (seven - six))
                     
-                    eight = datetime.now()
+                    #eight = datetime.now()
                     if c1 is not None:
                         fake_cat = torch.cat([fakeact, c1], dim=1)
                         real_cat = torch.cat([real, c2], dim=1)
                     else:
                         real_cat = real
                         fake_cat = fakeact
-                    nine = datetime.now()
-                    print("E: ", (nine-eight))
+                    #nine = datetime.now()
+                    #print("E: ", (nine-eight))
                     
-                    ten = datetime.now()
+                    #ten = datetime.now()
                     y_fake = discriminator(fake_cat)
                     y_real = discriminator(real_cat)
-                    eleven = datetime.now()
-                    print("F: ", (eleven-ten))                    
+                    #eleven = datetime.now()
+                    #print("F: ", (eleven-ten))                    
 
                     
-                    twelve = datetime.now()
+                    #twelve = datetime.now()
                     pen = discriminator.calc_gradient_penalty(
                         real_cat, fake_cat, self._device, self.pac)
                     loss_d = -(torch.mean(y_real) - torch.mean(y_fake))
-                    thirteen = datetime.now()
-                    print("G: ", (thirteen-twelve)) 
+                    #thirteen = datetime.now()
+                    #print("G: ", (thirteen-twelve)) 
                     
                     D_loss_per_step.append(loss_d.item())
                     
-                    fourteen = datetime.now()
+                    #fourteen = datetime.now()
                     optimizerD.zero_grad()
-                    fifteen = datetime.now()
-                    print("H: ", (fifteen-fourteen))  
+                    #fifteen = datetime.now()
+                    #print("H: ", (fifteen-fourteen))  
                     
-                    sixteen = datetime.now()
+                    #sixteen = datetime.now()
                     pen.backward(retain_graph=True)
-                    seventeen = datetime.now()
-                    print("I: ", (seventeen-sixteen))  
+                    #seventeen = datetime.now()
+                    #print("I: ", (seventeen-sixteen))  
                     
-                    eighteen = datetime.now()
+                    #eighteen = datetime.now()
                     loss_d.backward()
-                    nineteen = datetime.now()
-                    print("I: ", (nineteen-eighteen))
+                    #nineteen = datetime.now()
+                    #print("I: ", (nineteen-eighteen))
                     
-                    twenty = datetime.now()
+                    #twenty = datetime.now()
                     optimizerD.step()
-                    twenteone = datetime.now()
-                    print("J: ", (twenteone-twenty))
+                    #twenteone = datetime.now()
+                    #print("J: ", (twenteone-twenty))
 
                 fakez = torch.normal(mean=mean, std=std)
                 condvec = self._data_sampler.sample_condvec(self._batch_size)
@@ -490,17 +490,18 @@ class CTGANSynthesizer(BaseSynthesizer):
         df["g_loss_per_epoch"] = G_loss_per_epoch
         df["time_per_epoch"] = time_list
         print(df.head())
+        df.to_csv()
         
-        end2 = datetime.now()
-        print("start uploading collection to platform")
-        #identifier = str((end2-start).total_seconds())
-        identifier = str(self.model_id)
-        Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
-        Clapp.App("ctgan").Collection().Create(slug=identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
-        Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
-        Clapp.App("ctgan").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
-        end3 = datetime.now()
-        print("uploading collection to platform took: " + str(end3 - end2))
+#         end2 = datetime.now()
+#         print("start uploading collection to platform")
+#         #identifier = str((end2-start).total_seconds())
+#         identifier = str(self.model_id)
+#         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
+#         Clapp.App("ctgan").Collection().Create(slug=identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
+#         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
+#         Clapp.App("ctgan").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
+#         end3 = datetime.now()
+#         print("uploading collection to platform took: " + str(end3 - end2))
         print("done with ctgan fit function")    
             
 
