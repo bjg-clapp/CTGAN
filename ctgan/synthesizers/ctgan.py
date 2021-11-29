@@ -490,7 +490,8 @@ class CTGANSynthesizer(BaseSynthesizer):
         df["g_loss_per_epoch"] = G_loss_per_epoch
         df["time_per_epoch"] = time_list
         print(df.head())
-        df.to_csv()
+        identifier = str(self.model_id)
+        df.to_csv("C:/Users/DiegoClappForm/Documents/Benjamin/ctgan_models/" + identifier + ".csv")
         
 #         end2 = datetime.now()
 #         print("start uploading collection to platform")
