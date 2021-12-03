@@ -134,7 +134,7 @@ class TVAESynthesizer(BaseSynthesizer):
         
         for i in range(self.epochs):
             
-            print("bjg-clapp tvae: ", (i+1))
+            print("bjg-clapp tvaee: ", (i+1))
             start = datetime.now()
             loss_per_step_list = []            
             for id_, data in enumerate(loader):
