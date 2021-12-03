@@ -162,18 +162,13 @@ class TVAESynthesizer(BaseSynthesizer):
         df["loss_per_epoch"] = loss_list
         df["time_per_epoch"] = time_list
         print("done with tvae epoch")   
-        
-        end2 = datetime.now()
-        print("start uploading collection to platform")
-        #identifier = str((end2-start).total_seconds())
+       
         identifier = str(self.model_id)
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
         Clapp.App("tvae").Collection().Create(slug= identifier, name=identifier, description="", encryption=False, logging=False, sources=[])
         Clapp.Auth(baseURL="https://clappform-qa.clappform.com/", username="b.dejong@clappform.com", password="Ff389?sf")
         Clapp.App("tvae").Collection(identifier).DataFrame().Append(dataframe=df, n_jobs = 1, show = True)
-        end3 = datetime.now()
-        print("uploading collection to platform took: " + str(end3 - end2))
-        print("done with ctgan fit function") 
+        print("done with tvae fit function") 
         
 
     def sample(self, samples):
